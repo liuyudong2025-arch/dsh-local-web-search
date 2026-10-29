@@ -1,0 +1,15 @@
+# dsh-local-web-search bundle layer
+# Disable DeepSeek's paid server-side Search/Fetch provider.
+- id: web-search-deepseek
+  disabled: true
+
+# Register native, clearly named local tools.
+- insert:
+    - id: local-web-search
+      name: dsh-local-web-search
+      config:
+        provider: bing
+        searxngUrl: http://127.0.0.1:8080
+        timeoutMs: 20000
+        maxFetchBytes: 2097152
+        maxResults: 10

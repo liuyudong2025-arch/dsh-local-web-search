@@ -1,0 +1,71 @@
+{
+  "name": "dsh-local-web-search",
+  "version": "0.1.1",
+  "description": "Free local web search and page fetching tools for DeepSeek Harness, replacing the paid DeepSeek Search/Fetch provider.",
+  "type": "module",
+  "main": "index.js",
+  "exports": {
+    ".": "./index.js",
+    "./client": "./lib/client.js",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "index.js",
+    "lib/*.js",
+    "cordis.patch.yml",
+    "README.md",
+    "LICENSE"
+  ],
+  "keywords": [
+    "deepseek",
+    "deepseek-harness",
+    "dsh",
+    "cordis",
+    "web-search",
+    "web-fetch"
+  ],
+  "author": "kk <liuyudong2025@gmail.com>",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/liuyudong2025-arch/dsh-local-web-search.git"
+  },
+  "homepage": "https://github.com/liuyudong2025-arch/dsh-local-web-search#readme",
+  "bugs": {
+    "url": "https://github.com/liuyudong2025-arch/dsh-local-web-search/issues"
+  },
+  "license": "MIT",
+  "engines": {
+    "node": ">=22.19",
+    "dsh": ">=0.2.1-rc.2 <0.3.0"
+  },
+  "dsh": {
+    "client": {
+      "inject": [
+        "@deepseek-ai/dsh-client-locale",
+        "@deepseek-ai/dsh-client-ui-plugin-manager"
+      ],
+      "platform": "web"
+    },
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    }
+  },
+  "peerDependencies": {
+    "@deepseek-ai/cordis": "*",
+    "@deepseek-ai/dsh-tools": "*",
+    "@deepseek-ai/schemastery": "*"
+  },
+  "peerDependenciesMeta": {
+    "@deepseek-ai/cordis": { "optional": true },
+    "@deepseek-ai/dsh-tools": { "optional": true },
+    "@deepseek-ai/schemastery": { "optional": true }
+  },
+  "scripts": {
+    "check": "node --check index.js && node --check lib/web.js && node --check lib/client.js && node --test test/*.test.js",
+    "pack:check": "npm run check && npm pack --dry-run",
+    "package": "npm run check && npm pack"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}
