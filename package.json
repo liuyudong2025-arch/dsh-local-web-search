@@ -1,6 +1,6 @@
 {
   "name": "dsh-local-web-search",
-  "version": "0.1.1",
+  "version": "0.1.3",
   "description": "Free local web search and page fetching tools for DeepSeek Harness, replacing the paid DeepSeek Search/Fetch provider.",
   "type": "module",
   "main": "index.js",

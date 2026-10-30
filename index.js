@@ -5,17 +5,29 @@ import { createWebClient, formatFetchResult, formatSearchResults } from './lib/w
 export const name = 'dsh-local-web-search';
 export const inject = ['tools'];
 
+// Volatile fields are the only ones the Harness settings service exposes to the
+// booted web client, so the row's configuration page can read and write them.
 export const Config = Schema.object({
-  provider: Schema.string().default('bing'),
-  searxngUrl: Schema.string().default('http://127.0.0.1:8080'),
-  timeoutMs: Schema.number().default(20000),
-  maxFetchBytes: Schema.number().default(2 * 1024 * 1024),
-  maxResults: Schema.number().default(10),
+  provider: Schema.string().default('bing').volatile(),
+  searxngUrl: Schema.string().default('http://127.0.0.1:8080').volatile(),
+  timeoutMs: Schema.number().default(20000).volatile(),
+  maxFetchBytes: Schema.number().default(2 * 1024 * 1024).volatile(),
+  maxResults: Schema.number().default(10).volatile(),
 });
 
-export function apply(ctx, config) {
-  const client = createWebClient(config);
+const FIELDS = ['provider', 'searxngUrl', 'timeoutMs', 'maxFetchBytes', 'maxResults'];
 
+function unwrap(value) {
+  return value !== null && typeof value === 'object' && typeof value.get === 'function' ? value.get() : value;
+}
+
+// Volatile fields arrive as references the loader updates in place, so each call
+// reads the current values instead of the ones captured when the plugin loaded.
+function currentConfig(config) {
+  return Object.fromEntries(FIELDS.map(key => [key, unwrap(config[key])]));
+}
+
+export function apply(ctx, config) {
   ctx.tools.register(defineTool({
     name: 'local_web_search',
     description: 'Search the live public internet through the local free search provider. Use this instead of DeepSeek Search.',
@@ -28,6 +40,7 @@ export function apply(ctx, config) {
       render: (_args, value) => [{ type: 'text', text: value }],
     },
     async execute(args, exec) {
+      const client = createWebClient(currentConfig(config));
       const results = await client.search(args.query, args.count, exec.signal);
       return formatSearchResults(results);
     },
@@ -44,6 +57,7 @@ export function apply(ctx, config) {
       render: (_args, value) => [{ type: 'text', text: value }],
     },
     async execute(args, exec) {
+      const client = createWebClient(currentConfig(config));
       const page = await client.fetchPage(args.url, exec.signal);
       return formatFetchResult(page);
     },

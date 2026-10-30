@@ -10,7 +10,11 @@ test('browser client registers the Harness row configuration page', async () => 
         client = definition.factory((id) => {
           if (id === 'react') return {};
           if (id === 'react/jsx-runtime') return {};
-          if (id === '@deepseek-ai/dsh-client-ui-primitives') return { ConfigField() {} };
+          // Only the components the published primitives module exports; the
+          // settings page shares the built-in form frame and field control.
+          if (id === '@deepseek-ai/dsh-client-ui-primitives') {
+            return { SettingsForm() {}, SettingsValueField() {} };
+          }
           throw new Error(`Unexpected client dependency: ${id}`);
         });
       },
