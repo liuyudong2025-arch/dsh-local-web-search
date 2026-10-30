@@ -3,7 +3,14 @@
 - id: web-search-deepseek
   disabled: true
 
-# Register native, clearly named local tools.
+# Route Harness's built-in web_search through this package's free provider.
+# This works even when an Agent preset or a saved user layer keeps tool-web.
+- id: web
+  config:
+    searchProvider: local-free
+    fetchProvider: local-free
+
+# Register the free provider plus native, clearly named local tools.
 - insert:
     - id: local-web-search
       name: dsh-local-web-search
@@ -11,5 +18,6 @@
         provider: bing
         searxngUrl: http://127.0.0.1:8080
         timeoutMs: 20000
-        maxFetchBytes: 2097152
+        maxFetchBytes: 5242880
         maxResults: 10
+        autoFetchCount: 3

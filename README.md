@@ -1,8 +1,8 @@
 # dsh-local-web-search
 
-> 0.1.1 新增 Harness 图形化参数页：在“插件”中打开本插件的 `local-web-search` 行并点击“配置”，即可设置搜索源、SearXNG 地址、超时、网页大小上限和最大结果数，无需手改 YAML。
+> 0.2.0 同时接管 Harness 内置 `web_search` 和 `web_fetch`。搜索会自动抓取前 3 个结果的正文节选，再交给模型回答，避免只看标题和摘要；新闻查询继续聚合 Bing 与国内科技 RSS，且不调用 DeepSeek Search/Fetch API。
 
-DeepSeek Harness 原生本地联网搜索插件。它会禁用 DeepSeek 官方 `web-search-deepseek`，并注册两个名称明确的本地工具：
+DeepSeek Harness 原生本地联网搜索插件。它会禁用 DeepSeek 官方 `web-search-deepseek` provider，把内置 `web_search` 路由到免费本地 provider，并注册两个名称明确的本地工具：
 
 - `local_web_search`：通过 Bing RSS、DuckDuckGo 或自建 SearXNG 搜索互联网。
 - `local_web_fetch`：从本机抓取公开网页并转换为可读文本。
@@ -20,7 +20,7 @@ dsh plugin --profile web add dsh-local-web-search
 从本地 tarball 安装：
 
 ```powershell
-dsh plugin --profile web add .\dsh-local-web-search-0.1.1.tgz
+dsh plugin --profile web add .\dsh-local-web-search-0.1.6.tgz
 ```
 
 重新启动 Harness 后，工具列表应出现：
@@ -41,13 +41,16 @@ dsh --profile web --dump-config
 ```yaml
 - id: web-search-deepseek
   disabled: true
+- id: web
+  config:
+    searchProvider: local-free
 - id: local-web-search
   name: dsh-local-web-search
 ```
 
 ## 配置
 
-0.1.1 起可直接在 Harness 的“插件”页面打开 `local-web-search` 行并点击“配置”。也可在 `$DSH_HOME/profiles/web/cordis.patch.yml` 中覆盖同一个插件行。默认配置：
+可直接在 Harness 的“插件”页面打开 `local-web-search` 行并点击“配置”。也可在 `$DSH_HOME/profiles/web/cordis.patch.yml` 中覆盖同一个插件行。默认配置：
 
 ```yaml
 - id: local-web-search
